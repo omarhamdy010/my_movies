@@ -48,7 +48,7 @@
         <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
-                @include('_layouts.errors')
+            @include('sweetalert::alert')
                 <!-- Small boxes (Stat box) -->
             @yield('content')
 

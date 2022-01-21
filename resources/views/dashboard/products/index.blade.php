@@ -4,14 +4,14 @@
 
     <div class="content-wrapper">
         <div class="row  d-flex justify-content-center my-2" style="margin: auto ;padding: 10px ">
-            @if(auth()->user()->hasPermission('product_create'))
+{{--            @if(auth()->user()->hasPermission('product_create'))--}}
                 <div class="form-group">
                     <a href="{{route('products.create')}}" class="btn btn-primary">{{__('site.create')}}</a>
                 </div>
-            @endif
+{{--            @endif--}}
         </div>
         <div class="row">
-            <table class="table table-bordered yajra-datatable">
+            <table id="student_table" class="table table-bordered yajra-datatable">
                 <thead>
                 <tr>
                     <th>{{__('site.no')}}.</th>
@@ -58,6 +58,28 @@
                 ]
             });
 
+
         });
+        $(document).on('click', '.deleteProduct', function(){
+            var id = $(this).attr('id');
+            if(confirm("Are you sure you want to Delete this data?"))
+            {
+                $.ajax({
+                    url: 'dashboard/products' +id,
+                    mehtod:"get",
+                    data:{id:id},
+                    success:function(data)
+                    {
+                        alert(data);
+                        $('#student_table').DataTable().ajax.reload();
+                    }
+                })
+            }
+            else
+            {
+                return false;
+            }
+        })
+
     </script>
 @endsection

@@ -12,10 +12,10 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="{{auth()->user()->image_path}}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{'#'}}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{auth()->user()->name}}</a>
+                <a href="#" class="d-block">{{'#'}}</a>
             </div>
         </div>
 
@@ -29,7 +29,7 @@
                         </p>
                     </a>
                 </li>
-                @if(auth()->user()->hasPermission('users_read'))
+                @if(auth('admin')->user()->hasPermission('users_read'))
                     <li class="nav-item menu-open">
                         <a href="{{route('users.index')}}" class="nav-link active">
                             <i class="nav-icon fas fa-user"></i>
@@ -39,7 +39,7 @@
                         </a>
                     </li>
                 @endif
-                @if(auth()->user()->hasPermission('category_read'))
+{{--                @if(auth()->user()->hasPermission('category_read'))--}}
                     <li class="nav-item menu-open">
                         <a href="{{route('categories.index')}}" class="nav-link active">
                             <i class="nav-icon fas fa-user"></i>
@@ -48,8 +48,8 @@
                             </p>
                         </a>
                     </li>
-                @endif
-                @if(auth()->user()->hasPermission('product_read'))
+{{--                @endif--}}
+{{--                @if(auth()->user()->hasPermission('product_read'))--}}
                     <li class="nav-item menu-open">
                         <a href="{{route('products.index')}}" class="nav-link active">
                             <i class="nav-icon fas fa-user"></i>
@@ -58,7 +58,17 @@
                             </p>
                         </a>
                     </li>
-                @endif
+{{--                @endif--}}
+                {{--                @if(auth()->user()->hasPermission('product_read'))--}}
+                <li class="nav-item menu-open">
+                    <a href="{{route('admins.index')}}" class="nav-link active">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            {{__('site.admins')}}
+                        </p>
+                    </a>
+                </li>
+                {{--                @endif--}}
                 <li class="nav-item menu-open">
                     <a href="{{route('fronts.index')}}" class="nav-link active">
                         <i class="nav-icon fas fa-user"></i>

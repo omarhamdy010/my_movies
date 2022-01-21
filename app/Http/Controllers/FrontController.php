@@ -6,9 +6,25 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class FrontController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function($request,$next){
+            if (session('success')) {
+                Alert::success(session('success'));
+            }
+
+            if (session('error')) {
+                Alert::error(session('error'));
+            }
+
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         $categories = Category::all();
@@ -20,8 +36,9 @@ class FrontController extends Controller
 
     public function cart()
     {
+        $products=\App\Models\Product::with('images')->get();
 
-        return view('front.site.cart');
+        return view('front.site.cart' , compact('products'));
     }
 
 
@@ -66,7 +83,7 @@ class FrontController extends Controller
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
             }
-            session()->flash('success', 'Product removed successfully');
+            Alert::success('success', 'You\'ve Successfully deleted');
         }
     }
 

@@ -69,6 +69,13 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
+                    <!-- Guard Selector -->
+                        <div>
+                            <select name="guard" id="guard" required >
+                            <option value="user">User</option>
+                            <option value="teacher">Teacher</option>
+                            </select>
+                            </div>
                     <div class="input-group mb-3">
                         <input id="email" type="email" placeholder="Email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         @error('email')

@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Permission;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use RealRashid\SweetAlert\Facades\Alert;
-use Yajra\Datatables\Datatables;
+use Yajra\DataTables\DataTables;
 
-class UserController extends Controller
+class AdminController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware(function($request,$next){
@@ -29,10 +27,11 @@ class UserController extends Controller
         });
     }
 
+
     public function index(Request $request)
     {
 
-        return view('dashboard.users.index');
+        return view('dashboard.Admins.index');
 
     }
 
@@ -43,33 +42,33 @@ class UserController extends Controller
 
         if ($request->ajax()) {
 
-            $data = User::where('id', '<>', auth()->user()->id)->latest()->get();
+            $data = Admin::where('id', '<>', auth()->admin()->id)->latest()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('actions', function ($row) {
-//                    $actionBtn1= '';
-//                    $actionBtn= '';
-//                    if (auth()->user()->hasPermission('users_update')) {
-                        $actionBtn1 = '<a href="users/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
-//                    }
-//                    if (auth()->user()->hasPermission('users_delete')) {
-                        $actionBtn = '<a   href="users/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
-//                    }
+                    $actionBtn1= '';
+                    $actionBtn= '';
+                    if (auth()->admin()->hasPermission('admins_update')) {
+                        $actionBtn1 = '<a href="admins/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
+                    }
+                    if (auth()->admin()->hasPermission('admins_delete')) {
+                        $actionBtn = '<a   href="admins/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
+                    }
                     return $actionBtn1 . ' ' . $actionBtn;
 
                 })->addColumn('image', function ($artist) {
                     $url = $artist->image_path;
                     return '<img src="' . $url . '" border="0" width="100" class="img-rounded" align="center" />';
                 })->rawColumns(['actions','image'])
-                       ->make(true);
+                ->make(true);
 
         }
     }
 
-    public function create(User $users)
+    public function create(Admin $admins)
     {
         $permissions = Permission::all();
-        return view('dashboard.users.create', compact('users', 'permissions'));
+        return view('dashboard.admins.create', compact('admins', 'permissions'));
 
     }
 
@@ -90,7 +89,7 @@ class UserController extends Controller
             $img = Image::make($request->image);
             $img->resize(100, 100, function ($constraint) {
                 $constraint->aspectRatio();
-            })->save(public_path('/upload/users/'. $request->image->hashName())
+            })->save(public_path('/upload/admins/'. $request->image->hashName())
 
             );
 
@@ -98,27 +97,27 @@ class UserController extends Controller
 
         }
 
-        $user = User::create($data);
+        $admin = Admin::create($data);
 
-        $user->attachRole('admin');
+        $admin->attachRole('admin');
 
-        $user->permissions()->sync($request->permissions);
+        $admin->permissions()->sync($request->permissions);
 
         Alert::success('success', 'You\'ve Successfully created');
 
-        return redirect()->route('users.index');
+        return redirect()->route('admins.index');
 
     }
 
-    public function edit(User $user)
+    public function edit(Admin $admin)
     {
 
         $permissions = Permission::all();
 
-        return view('dashboard.users.edit', compact('user', 'permissions'));
+        return view('dashboard.admins.edit', compact('admin', 'permissions'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, Admin $admin)
     {
         $request->validate([
             'email' => 'required:unique',
@@ -127,40 +126,43 @@ class UserController extends Controller
         ]);
         $data = $request->except(['permissions']);
 
-        if ($user->image!= 'default.png')
+        if ($admin->image!= 'default.png')
         {
-            Storage::disk('public_upload')->delete('/users/'.$user->image);
+            Storage::disk('public_upload')->delete('/admins/'.$admin->image);
         }
         if ($request->image)
         {
             $img = Image::make($request->image);
             $img->resize(100, 100, function ($constraint) {
                 $constraint->aspectRatio();
-            })->save(public_path('/upload/users/'. $request->image->hashName())
+            })->save(public_path('/upload/admins/'. $request->image->hashName())
             );
 
             $data['image']= $request->image->hashName();
         }
-        $user->update($data);
+        $admin->update($data);
 
-        $user->permissions()->sync($request->permissions);
+        $admin->permissions()->sync($request->permissions);
 
         Alert::success('success', 'You\'ve Successfully updated');
 
-        return redirect()->route('users.index');
+        return redirect()->route('admins.index');
     }
 
     public function destroy($id)
     {
-        $user = User::find($id);
-        if ($user->image!= 'default.png')
+        $admin = Admin::find($id);
+        if ($admin->image!= 'default.png')
         {
-            Storage::disk('public_upload')->delete('/users/'.$user->image);
+            Storage::disk('public_upload')->delete('/admins/'.$admin->image);
         }
-        $user->delete();
+        $admin->delete();
 
         Alert::success('success', 'You\'ve Successfully deleted');
 
-        return redirect()->route('users.index');
+        return redirect()->route('admins.index');
     }
+
+
+
 }

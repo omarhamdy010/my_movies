@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(LaratrustSeeder::class);
 
-        $this->call(UserSeeder::class);
+        $this->call(AdminSeeder::class);
 
 //        \App\Models\Category::factory(10)->create();
 //        \App\Models\Product::factory(10)->create();

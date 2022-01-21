@@ -4,11 +4,11 @@
 
     <div class="content-wrapper">
         <div class="row  d-flex justify-content-center my-2" style="margin: auto ;padding: 10px ">
-            @if(auth()->user()->hasPermission('category_create'))
+{{--            @if(auth()->user()->hasPermission('category_create'))--}}
                 <div>
                     <a href="{{route('categories.create')}}" class="btn btn-primary">{{__('site.create')}}</a>
                 </div>
-            @endif
+{{--            @endif--}}
         </div>
         <div class="row">
             <table class="table table-bordered yajra-datatable">

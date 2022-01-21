@@ -11,7 +11,7 @@ return [
         'super_admin' => [
             'category' => 'c,r,u,d',
             'product' => 'c,r,u,d',
-            'users' => 'c,r,u,d',
+            'admins' => 'c,r,u,d',
         ],
         'admin'=>[],
 

@@ -4,21 +4,23 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class UserSeeder extends Seeder
+class AdminSeeder extends Seeder
 {
 
     public function run()
     {
 
                 // Create default user for each role
-                $user = \App\Models\User::create([
+
+                $admin = \App\Models\Admin::create([
+
                     'name' => 'super_admin',
                     'image' => 'default.png',
                     'email' => 'super@admin.com',
                     'password' => bcrypt(12345678),
-                    'is_admin'=>1 ,
                 ]);
-                $user->attachRole('super_admin');
+
+                $admin->attachRole('super_admin');
 
     }
 }

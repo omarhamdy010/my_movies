@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use http\Env\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -22,21 +22,23 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
+    protected $guard = 'admin';
+
     protected $redirectTo = RouteServiceProvider::HOME;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    public function showLoginForm()
+    {
+        return redirect()->route('dashboard.index');
+    }
+
+    protected function guard()
+    {
+        return Auth::guard($this->guard);
+    }
+
     public function __construct()
     {
-        $this->middleware('admin')->except('logout');
+        $this->middleware(['admin'])->except('logout');
     }
 
     public function login(\Illuminate\Http\Request $request)
@@ -59,4 +61,8 @@ class LoginController extends Controller
                 ->with('error','Email & Password are incorrect.');
         }
     }
+
+
+
+
 }

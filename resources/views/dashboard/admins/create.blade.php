@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <form method="post" action="{{route('users.store')}}" enctype="multipart/form-data">
+        <form method="post" action="{{route('admins.store')}}" enctype="multipart/form-data">
             @csrf
             @method('post')
                 <div class="form-group">
@@ -42,7 +42,7 @@
 
                         <div class="form-group">
 
-                            <img src="{{asset('upload/users/default.png')}}" style="width:100px ; height: 100px" class="form-control image-preview">
+                            <img src="{{asset('upload/admins/default.png')}}" style="width:100px ; height: 100px" class="form-control image-preview">
 
                         </div>
 
@@ -66,7 +66,7 @@
             </div>
 
             @php
-                $models = ['user' ,'category' , 'product' ];
+                $models = ['admin' ,'user','category' , 'product' ];
                 $per =['create', 'read' , 'update' , 'delete']
             @endphp
 

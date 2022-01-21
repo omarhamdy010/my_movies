@@ -14,32 +14,37 @@
         <tbody>
 
         @php
-         $total = 0
+            $total = 0
         @endphp
 
         @if(session('cart'))
 
-            @foreach(session('cart') as $id => $details)
+            {{--            @foreach(session('cart') as $id => $details)--}}
 
-                @php $total += $details['price'] * $details['quantity'] ;
+            @foreach($products as $id=>$product)
+                @php
 
-                     $products=\App\Models\Product::all();
+                     $products=\App\Models\Product::with('images')->get();
                 @endphp
 
                 <tr data-id="{{ $id }}">
                     <td data-th="Product">
                         <div class="row">
-                            <div class="col-sm-3 hidden-xs"><img src="{{'#'}}" width="100" height="100" class="img-responsive"/></div>
+                            @foreach($product->images as $images )
+                                <div class="col-sm-3 hidden-xs"><img src="{{asset($images->path)}}" width="100"
+                                                                     height="100" class="img-responsive"/></div>
+                            @endforeach
                             <div class="col-sm-9">
-                                <h4 class="nomargin">{{ $details['name'] }}</h4>
+                                <h4 class="nomargin">{{ $product['name'] }}</h4>
                             </div>
                         </div>
                     </td>
-                    <td data-th="Price">${{ $details['price'] }}</td>
+                    <td data-th="Price">${{ $product['price'] }}</td>
                     <td data-th="Quantity">
-                        <input type="number" value="{{ $details['quantity'] }}" class="form-control quantity update-cart" />
+                        <input type="number" value="{{ $product['quantity'] }}"
+                               class="form-control quantity update-cart"/>
                     </td>
-                    <td data-th="Subtotal" class="text-center">${{ $details['price'] * $details['quantity'] }}</td>
+                    <td data-th="Subtotal" class="text-center">${{ $product['price'] * $product['quantity'] }}</td>
                     <td class="actions" data-th="">
                         <button class="btn btn-danger btn-sm remove-from-cart"><i class="fa fa-trash-o"></i></button>
                     </td>
@@ -88,7 +93,7 @@
 
             var ele = $(this);
 
-            if(confirm("Are you sure want to remove?")) {
+            if (confirm("Are you sure want to remove?")) {
                 $.ajax({
                     url: '{{ route('remove.from.cart') }}',
                     method: "DELETE",

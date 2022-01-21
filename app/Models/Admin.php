@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laratrust\Traits\LaratrustUserTrait;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
-{
-    use HasApiTokens, HasFactory, Notifiable ;
+class Admin extends Authenticatable
+{    use HasApiTokens, Notifiable ;
+    use HasFactory;
+    use CanResetPassword;
+    use LaratrustUserTrait;
 
-    protected $guarded = [];
-
+    protected $guarded='admin';
+protected $fillable=['name','email','image','password'];
     protected $appends=['image_path'];
 
     protected $hidden = [
@@ -24,7 +29,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-public function getImagePathAttribute()
+    public function getImagePathAttribute()
     {
         return asset('/upload/users/' . $this->image);
     }

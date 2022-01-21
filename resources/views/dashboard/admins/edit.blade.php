@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
 
-        <form method="post" action="{{route('users.update', $user->id)}}" enctype="multipart/form-data">
+        <form method="post" action="{{route('admins.update', $admin->id)}}" enctype="multipart/form-data">
 
             @csrf
 
@@ -15,7 +15,7 @@
                     <label for="name">{{__('site.name')}}</label>
 
                     <input class="form-control @error('name') is-invalid @enderror"
-                           type="text" name="name" id="name" value="{{ $user->name }}" >
+                           type="text" name="name" id="name" value="{{ $admin->name }}" >
 
                     @if($errors->has('name'))
 
@@ -33,7 +33,7 @@
 
                 <label>{{__('site.email')}}</label>
 
-                <input name="email" type="email" class="form-control" value="{{$user->email}}">
+                <input name="email" type="email" class="form-control" value="{{$admin->email}}">
 
                 @if ($errors->has('email'))
 
@@ -53,7 +53,7 @@
 
             <div class="form-group">
 
-                <img src="{{$user->image_path}}" style="width:100px ; height: 100px" class="form-control image-preview">
+                <img src="{{$admin->image_path}}" style="width:100px ; height: 100px" class="form-control image-preview">
 
             </div>
 
@@ -74,7 +74,7 @@
 
             @php
 
-                $models = ['user' ,'category' , 'product' ];
+                $models = ['admin' ,'user','category' , 'product' ];
                 $per =['create', 'read' , 'update' , 'delete'];
 
             @endphp
@@ -99,7 +99,7 @@
 
                             <input type="checkbox" name="permissions[]" value="{{ $permission->id }}"
 
-                                   {{ $user->permissions->contains($permission) ? 'checked': ''  }}>
+                                   {{ $admin->permissions->contains($permission) ? 'checked': ''  }}>
 
                             {{ $permission->display_name }}
 

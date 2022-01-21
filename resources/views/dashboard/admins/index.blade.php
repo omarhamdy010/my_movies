@@ -4,6 +4,14 @@
 
 
     <div class="content-wrapper" >
+        <div class="row  d-flex justify-content-center my-2"  style="margin: auto ;padding: 10px ">
+{{--            @if(auth()->admin()->hasPermission('admins_create'))--}}
+                <div>
+                    <a href="{{route('admins.create')}}" class="btn btn-primary">{{__('site.create')}}</a>
+                </div>
+{{--            @endif--}}
+        </div>
+
         <div class="row">
             <table class="table table-bordered yajra-datatable" style="">
                 <thead>
@@ -30,7 +38,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{route('users.ajax')}}",
+                    url: "{{route('admins.ajax')}}",
                     method: 'get',
                 },
                 columns: [

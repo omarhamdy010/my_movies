@@ -8,11 +8,26 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
 
 class ProductsController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(function($request,$next){
+            if (session('success')) {
+                Alert::success(session('success'));
+            }
+
+            if (session('error')) {
+                Alert::error(session('error'));
+            }
+
+            return $next($request);
+        });
+    }
     public function index()
     {
         return view('dashboard.products.index');
@@ -31,7 +46,7 @@ class ProductsController extends Controller
                     $actionBtn1 = '<a href="products/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
                 }
                 if (auth()->user()->hasPermission('product_delete')) {
-                    $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
+                    $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm deleteProduct">Delete</a>';
                 }
                 return $actionBtn1 . '  ' . $actionBtn;
 
@@ -170,7 +185,6 @@ class ProductsController extends Controller
 
         $Products->delete();
 
-        Session()->flash('success', 'deleted successfully');
 
         return redirect()->route('products.index');
     }
