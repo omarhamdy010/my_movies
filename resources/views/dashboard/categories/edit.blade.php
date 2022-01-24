@@ -19,6 +19,16 @@
                     @endif
                 </div>
             @endforeach
+            <div class="form-group">
+                <label for="parent_category">Parent Category:</label>
+                <select class="form-control" name="parent_category">
+                    @foreach($categories as $Category)
+
+                        <option value="{{ $Category->id }}"  {{ $Category->id ==  $Category->parent_category ? 'selected' : ' ' }}> {{ $Category->name }}</option>
+                    @endforeach
+                </select>
+                <span class="text-danger">{{ $errors->first('parent_category') }}</span>
+            </div>
 
             <div class="form-group">
                 <label>{{__('site.image')}}</label>

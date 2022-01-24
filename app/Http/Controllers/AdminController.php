@@ -27,10 +27,8 @@ class AdminController extends Controller
         });
     }
 
-
     public function index(Request $request)
     {
-
         return view('dashboard.Admins.index');
 
     }
@@ -42,18 +40,18 @@ class AdminController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Admin::where('id', '<>', auth()->admin()->id)->latest()->get();
+            $data = Admin::latest()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('actions', function ($row) {
                     $actionBtn1= '';
                     $actionBtn= '';
-                    if (auth()->admin()->hasPermission('admins_update')) {
+//                    if (auth()->guard('admin')->hasPermission('admins_update')) {
                         $actionBtn1 = '<a href="admins/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
-                    }
-                    if (auth()->admin()->hasPermission('admins_delete')) {
+//                    }
+//                    if (auth()->guard('admin')->hasPermission('admins_delete')) {
                         $actionBtn = '<a   href="admins/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
-                    }
+//                    }
                     return $actionBtn1 . ' ' . $actionBtn;
 
                 })->addColumn('image', function ($artist) {

@@ -16,8 +16,10 @@ class Admin extends Authenticatable
     use CanResetPassword;
     use LaratrustUserTrait;
 
-    protected $guarded='admin';
-protected $fillable=['name','email','image','password'];
+    protected $guard ='admin';
+
+    protected $fillable=['name','email','image','password'];
+
     protected $appends=['image_path'];
 
     protected $hidden = [
@@ -31,6 +33,6 @@ protected $fillable=['name','email','image','password'];
 
     public function getImagePathAttribute()
     {
-        return asset('/upload/users/' . $this->image);
+        return asset('/upload/admins/' . $this->image);
     }
 }

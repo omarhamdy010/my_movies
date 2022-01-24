@@ -29,7 +29,7 @@
                         </p>
                     </a>
                 </li>
-                @if(auth('admin')->user()->hasPermission('users_read'))
+{{--                @if(auth()->guard('admin')->hasPermission('users_read'))--}}
                     <li class="nav-item menu-open">
                         <a href="{{route('users.index')}}" class="nav-link active">
                             <i class="nav-icon fas fa-user"></i>
@@ -38,7 +38,7 @@
                             </p>
                         </a>
                     </li>
-                @endif
+{{--                @endif--}}
 {{--                @if(auth()->user()->hasPermission('category_read'))--}}
                     <li class="nav-item menu-open">
                         <a href="{{route('categories.index')}}" class="nav-link active">

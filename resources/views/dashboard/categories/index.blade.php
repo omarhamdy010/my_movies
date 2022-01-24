@@ -16,6 +16,7 @@
                 <tr>
                     <th>{{__('site.no')}}.</th>
                     <th>{{__('site.name')}}</th>
+                    <th>{{__('site.parent_category')}}</th>
                     <th>{{__('site.image')}}</th>
                     <th>{{__('site.actions')}}</th>
                 </tr>
@@ -44,6 +45,7 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'name', name: 'name'},
+                    {data: 'parent_category', name: 'parent_category'},
                     {data: 'image', name: 'image'},
                     {
                         data: 'action',

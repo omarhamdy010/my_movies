@@ -7,13 +7,25 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class DashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:admin','auth:user']);
+        $this->middleware(function($request,$next){
+            if (session('success')) {
+                Alert::success(session('success'));
+            }
+
+            if (session('error')) {
+                Alert::error(session('error'));
+            }
+
+            return $next($request);
+        });
     }
+
     public function index()
     {
         $users =User::count();

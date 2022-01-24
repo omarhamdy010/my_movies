@@ -25,10 +25,10 @@ Route::group(
 
     });
 
-    Route::prefix('dashboard')->middleware(['auth:admin','verified'])->group(function () {
+    Route::prefix('dashboard')->group(function () {
 
         Route::resource('users', \App\Http\Controllers\UserController::class)->except('show');
-        Route::resource('admins', \App\Http\Controllers\UserController::class)->except('show');
+        Route::resource('admins', \App\Http\Controllers\AdminController::class)->except('show');
         Route::resource('products', \App\Http\Controllers\ProductsController::class)->except('show');
         Route::resource('categories', \App\Http\Controllers\CategoryController::class)->except('show');
         Route::resource('dashboard', \App\Http\Controllers\DashboardController::class)->except('show');
@@ -37,14 +37,14 @@ Route::group(
         Route::get('product.proajax', 'App\Http\Controllers\ProductsController@proajax')->name('product.proajax');
         Route::get('categories.catajax', 'App\Http\Controllers\CategoryController@catajax')->name('categories.catajax');
         Route::get('users-ajax', 'App\Http\Controllers\UserController@ajax')->name('users.ajax');
-        Route::get('admins-ajax', 'App\Http\Controllers\UserController@ajax')->name('users.ajax');
+        Route::get('admins-ajax', 'App\Http\Controllers\AdminController@ajax')->name('admins.ajax');
         Route::get('categories/{id}', 'App\Http\Controllers\CategoryController@destroy');
         Route::get('products/{id}', [\App\Http\Controllers\ProductsController::class, 'destroy']);
         Route::get('users/{id}', [\App\Http\Controllers\UserController::class, 'destroy']);
         Route::get('admins/{id}', [\App\Http\Controllers\UserController::class, 'destroy']);
 
     });
-    Route::prefix('front')->group(function () {
+    Route::prefix('front')->middleware(['auth','verified'])->group(function () {
 
         Route::get('cart', [\App\Http\Controllers\FrontController::class, 'cart'])->name('cart');
         Route::get('add-to-cart/{id}', [\App\Http\Controllers\FrontController::class, 'addToCart'])->name('add.to.cart');
@@ -53,26 +53,17 @@ Route::group(
 
     });
 
-    Route::group(['middleware' => ['auth:admin']], function () {
-        // Login Routes.
-        Route::get('admin/showlogin', 'App\Http\Controllers\Admin\LoginController@showLoginForm');
-        Route::post('admin/login','App\Http\Controllers\Admin\LoginController@login');
-
-        Route::get('/admin', 'App\Http\Controllers\Admin\LoginController@index');
-    });
-
     Auth::routes();
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-    Route::get('dashboard/home', 'App\Http\Controllers\DashboardController@handleAdmin')->name('dashboard.route')->middleware('admin');
 });
 
 //Route::get('loginadmin', function () {
 //    Auth::guard('admin')->attempt(['email' => 'super@admin.com', 'password' => '12345678']);
 //        echo "admin now";
 //});
-//
-//
-//Route::get('test', function () {
-//echo 'Admin';
-//})->middleware('auth:admin');
+
+
+Route::get('test', function () {
+echo 'Admin';
+})->middleware('auth:admin');

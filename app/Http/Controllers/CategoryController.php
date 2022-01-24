@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\Subcategory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
@@ -14,7 +16,7 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(function($request,$next){
+        $this->middleware(function ($request, $next) {
             if (session('success')) {
                 Alert::success(session('success'));
             }
@@ -26,6 +28,7 @@ class CategoryController extends Controller
             return $next($request);
         });
     }
+
     public function index()
     {
         return view('dashboard.categories.index');
@@ -34,33 +37,27 @@ class CategoryController extends Controller
     public function catajax(Request $request)
     {
         if ($request->ajax()) {
-            $data = Category::latest()->get();
+            $data = Category::latest()->with('parent')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $actionBtn1= '';
-                    $actionBtn= '';
-                    if (auth()->login(Admin::all())->hasPermission('category_update')) {
-
-                        $actionBtn1 = '<a href="categories/' . $row->id . '/edit" class="edit btn btn-success btn-sm">Edit</a>';
-                    }
-//                    if (auth()->user()->hasPermission('category_delete')) {
-
-                        $actionBtn = '<a href="categories/' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
-//                    }
+                    $actionBtn1 = '';
+                    $actionBtn = '';
+                    $actionBtn1 = '<a href="categories/' . $row->id . '/edit" class="edit btn btn-success btn-sm">Edit</a>';
+                    $actionBtn = '<a href="categories/' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
                     return $actionBtn1 . '  ' . $actionBtn;
-                })->addColumn('image', function ($artist) {
-                    $url = $artist->image_path;
+                })->addColumn('image', function ($row) {
+                    $url = $row->image_path;
                     return '<img src="' . $url . '" border="0" width="100" class="img-rounded" align="center" />';
-                })
-                ->rawColumns(['action', 'image'])
-                ->make(true);
+                })->addColumn('parent_category', function ($row) {
+                    return $row->parent  ?  $row->parent->name : 'None' ;
+                })->rawColumns(['action', 'image', 'parent_category'])->make(true);
         }
     }
 
-    public function create(Category $categories)
+    public function create()
     {
-
+        $categories = Category::all();
         return view('dashboard.categories.create', compact('categories'));
     }
 
@@ -71,15 +68,30 @@ class CategoryController extends Controller
             'en.*' => 'required | unique:category_translations,name',
         ]);
         $data = $request->except('image');
+
         if ($request->image) {
             Image::make($request->image)->resize(100, 100, function ($constraint) {
                 $constraint->aspectRatio();
             })->save(public_path('/upload/categories/' . $request->image->hashName()));
             $data['image'] = $request->image->hashName();
         }
+        Category::create($data);
 
-        $category = Category::create($data);
+        if ($request->parent_category) {
 
+            $category = new Subcategory();
+
+            $category->category_id = $request->parent_category;
+
+            if ($category->save())
+            {
+
+                return redirect()->route('categories.index')->with(['success' => 'Category added successfully.']);
+            }
+
+            return redirect()->back()->with(['fail' => 'Unable to add category.']);
+
+        }
         Alert::success('success', 'You\'ve Successfully created');
 
 
@@ -89,7 +101,9 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        return view('dashboard.categories.edit', compact('category'));
+        $categories = Category::all();
+
+        return view('dashboard.categories.edit', compact('category', 'categories'));
     }
 
     public function update(Request $request, Category $category)
@@ -100,19 +114,32 @@ class CategoryController extends Controller
         ]);
         $data = $request->all();
 
-        if ($category->image != 'default.png')
-        {
+        if ($category->image != 'default.png') {
             Storage::disk('public_upload')->delete('categories/' . $category->image);
         }
 
-        if ($request->image)
-        {
+        if ($request->image) {
             Image::make($request->image)->resize(100, 100, function ($constraint) {
                 $constraint->aspectRatio();
             })->save(public_path('/upload/categories/' . $request->image->hashName()));
             $data['image'] = $request->image->hashName();
         }
         $category->update($data);
+        if ($request->parent_category) {
+
+            $category = new Subcategory();
+
+            $category->category_id = $request->parent_category;
+
+            if ($category->save()) {
+
+                Alert::success('success', 'You\'ve Successfully updated');
+
+                return redirect()->route('categories.index');
+            }
+
+            return redirect()->back()->with(['fail' => 'Unable to update category.']);
+        }
 
         Alert::success('success', 'You\'ve Successfully updated');
 
@@ -123,12 +150,12 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
 
-        if ($category->image != 'default.png')
-        {
+        if ($category->image != 'default.png') {
             Storage::disk('public_upload')->delete('categories/' . $category->image);
         }
 
         $category->delete();
+
 
         Alert::success('success', 'You\'ve Successfully deleted');
 

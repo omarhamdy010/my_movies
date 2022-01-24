@@ -19,6 +19,7 @@ return[
     'price'=>'سعر',
     'choose_category'=>'اختيار القسم',
     'category'=>'قسم',
+    'Parent_category'=>'قسم داخلي',
     'categories'=>'الاقسام',
     'products'=>'المنتجات',
     'product'=>'المنتج',

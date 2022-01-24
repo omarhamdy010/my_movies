@@ -24,6 +24,8 @@ return[
     'site'=>'site',
     'see_more'=>'......see more ',
     'login'=>'login',
+    'image'=>'image',
+    'Parent_category'=>'Parent Category',
     'logout'=>'logout',
     'You are logged in!'=>'You are logged in!',
 

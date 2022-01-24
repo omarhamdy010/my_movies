@@ -34,6 +34,17 @@
             @endforeach
 
             <div class="form-group">
+                <label for="parent_category">Parent Category:</label>
+                <select class="form-control" name="parent_category">
+                    <option value="">Select a category</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
+                <span class="text-danger">{{ $errors->first('parent_category') }}</span>
+            </div>
+
+            <div class="form-group">
                 <label>{{__('site.image')}}</label>
                 <input class="form-control image @error('image') is-invalid @enderror" type="file" name="image"
                        value="{{ old('image') }}">
@@ -43,6 +54,7 @@
                             </span>
                 @endif
             </div>
+
             <img src="{{asset('upload/categories/default.png')}}" style="height: 200px ; width: 200px"
                  class="form-control image-preview">
             <div class="form-group">

@@ -36,7 +36,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('admin')->except('logout');
+//        $this->middleware('auth:admin');
     }
 
     public function login(\Illuminate\Http\Request $request)
@@ -49,7 +49,7 @@ class LoginController extends Controller
         ]);
 
         if(auth()->attempt(array('email' => $inputVal['email'], 'password' => $inputVal['password']))){
-            if (auth()->guard('admin')->user()->check()) {
+            if (auth()->guard('admin')) {
                 return redirect()->route('dashboard.index');
             }else{
                 return redirect()->route('front/index');

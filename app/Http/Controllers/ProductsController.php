@@ -42,12 +42,12 @@ class ProductsController extends Controller
             ->addColumn('actions', function ($row) {
                 $actionBtn1= '';
                 $actionBtn= '';
-                if (auth()->user()->hasPermission('product_update')) {
+//                if (auth()->user()->hasPermission('product_update')) {
                     $actionBtn1 = '<a href="products/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
-                }
-                if (auth()->user()->hasPermission('product_delete')) {
+//                }
+//                if (auth()->user()->hasPermission('product_delete')) {
                     $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm deleteProduct">Delete</a>';
-                }
+//                }
                 return $actionBtn1 . '  ' . $actionBtn;
 
             })->addColumn('image', function ($artist) {

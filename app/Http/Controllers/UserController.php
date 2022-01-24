@@ -43,19 +43,12 @@ class UserController extends Controller
 
         if ($request->ajax()) {
 
-            $data = User::where('id', '<>', auth()->user()->id)->latest()->get();
+            $data = User::latest()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('actions', function ($row) {
-//                    $actionBtn1= '';
-//                    $actionBtn= '';
-//                    if (auth()->user()->hasPermission('users_update')) {
-                        $actionBtn1 = '<a href="users/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
-//                    }
-//                    if (auth()->user()->hasPermission('users_delete')) {
                         $actionBtn = '<a   href="users/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
-//                    }
-                    return $actionBtn1 . ' ' . $actionBtn;
+                    return  $actionBtn;
 
                 })->addColumn('image', function ($artist) {
                     $url = $artist->image_path;
@@ -73,82 +66,6 @@ class UserController extends Controller
 
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'email' => 'required:unique',
-            'name' => 'required',
-            'password' => 'required|min:8',
-            'permissions' => 'required'
-        ]);
-
-        $data = $request->except(['password', 'permissions', 'image']);
-        $data['password'] = bcrypt($request->password);
-
-        if ($request->image)
-        {
-            $img = Image::make($request->image);
-            $img->resize(100, 100, function ($constraint) {
-                $constraint->aspectRatio();
-            })->save(public_path('/upload/users/'. $request->image->hashName())
-
-            );
-
-            $data['image']= $request->image->hashName();
-
-        }
-
-        $user = User::create($data);
-
-        $user->attachRole('admin');
-
-        $user->permissions()->sync($request->permissions);
-
-        Alert::success('success', 'You\'ve Successfully created');
-
-        return redirect()->route('users.index');
-
-    }
-
-    public function edit(User $user)
-    {
-
-        $permissions = Permission::all();
-
-        return view('dashboard.users.edit', compact('user', 'permissions'));
-    }
-
-    public function update(Request $request, User $user)
-    {
-        $request->validate([
-            'email' => 'required:unique',
-            'name' => 'required',
-            'permissions' => 'required'
-        ]);
-        $data = $request->except(['permissions']);
-
-        if ($user->image!= 'default.png')
-        {
-            Storage::disk('public_upload')->delete('/users/'.$user->image);
-        }
-        if ($request->image)
-        {
-            $img = Image::make($request->image);
-            $img->resize(100, 100, function ($constraint) {
-                $constraint->aspectRatio();
-            })->save(public_path('/upload/users/'. $request->image->hashName())
-            );
-
-            $data['image']= $request->image->hashName();
-        }
-        $user->update($data);
-
-        $user->permissions()->sync($request->permissions);
-
-        Alert::success('success', 'You\'ve Successfully updated');
-
-        return redirect()->route('users.index');
-    }
 
     public function destroy($id)
     {
