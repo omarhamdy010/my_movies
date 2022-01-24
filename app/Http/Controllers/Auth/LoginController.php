@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use http\Env\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -36,27 +36,45 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-//        $this->middleware('auth:admin');
+        $this->middleware('guest')->except('logout');
+        $this->middleware('guest:admin')->except('logout');
+//        $this->middleware('auth:admin')->except('login');
+    }
+
+    public function showAdminLoginForm()
+    {
+        return view('adminauth.adminlogin', ['url' => 'admin']);
     }
 
     public function login(\Illuminate\Http\Request $request)
     {
         $inputVal = $request->all();
-
         $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required',
+            'email'   => 'required|email',
+            'password' => 'required|min:6'
         ]);
+        if (Auth::attempt(array('email' => $inputVal['email'], 'password' => $inputVal['password']))) {
 
-        if(auth()->attempt(array('email' => $inputVal['email'], 'password' => $inputVal['password']))){
-            if (auth()->guard('admin')) {
-                return redirect()->route('dashboard.index');
-            }else{
-                return redirect()->route('front/index');
-            }
-        }else{
-            return redirect()->route('login')
-                ->with('error','Email & Password are incorrect.');
+            return redirect('front/fronts');
         }
+        return back()->withInput($request->only('email', 'remember'));
     }
+
+
+    public function loginAdmin(\Illuminate\Http\Request $request)
+    {
+        $inputVal = $request->all();
+        $this->validate($request, [
+            'email'   => 'required|email',
+            'password' => 'required|min:6'
+        ]);
+        if (Auth::guard('admin')->attempt(array('email' => $inputVal['email'], 'password' => $inputVal['password']))) {
+
+            return redirect()->route('dashboard.index');
+        }
+        return back()->withInput($request->only('email', 'remember'));
+    }
+
 }
+
+

@@ -139,8 +139,9 @@
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown"
-               href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-labelledby="navbarDropdown"
+               href="" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-labelledby="navbarDropdown"
                aria-expanded="false" v-pre>
+                {{\Illuminate\Support\Facades\Auth::guard('admin') ?Auth::guard('admin')->user()->name  : auth()->user()->name}}
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <a class="dropdown-item" href="{{ route('logout') }}"

@@ -25,14 +25,13 @@ Route::group(
 
     });
 
-    Route::prefix('dashboard')->group(function () {
+    Route::prefix('dashboard')->middleware(['auth:admin','verified'])->group(function () {
 
         Route::resource('users', \App\Http\Controllers\UserController::class)->except('show');
         Route::resource('admins', \App\Http\Controllers\AdminController::class)->except('show');
         Route::resource('products', \App\Http\Controllers\ProductsController::class)->except('show');
         Route::resource('categories', \App\Http\Controllers\CategoryController::class)->except('show');
         Route::resource('dashboard', \App\Http\Controllers\DashboardController::class)->except('show');
-        Route::resource('fronts', \App\Http\Controllers\FrontController::class)->except('show');
 
         Route::get('product.proajax', 'App\Http\Controllers\ProductsController@proajax')->name('product.proajax');
         Route::get('categories.catajax', 'App\Http\Controllers\CategoryController@catajax')->name('categories.catajax');
@@ -45,6 +44,7 @@ Route::group(
 
     });
     Route::prefix('front')->middleware(['auth','verified'])->group(function () {
+        Route::resource('fronts', \App\Http\Controllers\FrontController::class)->except('show');
 
         Route::get('cart', [\App\Http\Controllers\FrontController::class, 'cart'])->name('cart');
         Route::get('add-to-cart/{id}', [\App\Http\Controllers\FrontController::class, 'addToCart'])->name('add.to.cart');
@@ -54,16 +54,20 @@ Route::group(
     });
 
     Auth::routes();
+
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+
+    Route::get('/adminshow' ,'\App\Http\Controllers\Auth\LoginController@showAdminLoginForm')->name('adminshow');
+    Route::get('/adminlogin' ,'\App\Http\Controllers\Auth\LoginController@loginAdmin')->name('adminlogin');
 });
+
+
 
 //Route::get('loginadmin', function () {
 //    Auth::guard('admin')->attempt(['email' => 'super@admin.com', 'password' => '12345678']);
 //        echo "admin now";
 //});
-
-
-Route::get('test', function () {
-echo 'Admin';
-})->middleware('auth:admin');
+//Route::get('test', function () {
+//echo 'Admin';
+//})->middleware('auth:admin');

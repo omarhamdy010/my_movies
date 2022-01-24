@@ -41,7 +41,7 @@
             <!-- small card -->
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{$users -1}}</h3>
+                    <h3>{{$users }}</h3>
 
                     <p>  {{__('site.users')}}</p>
                 </div>
@@ -49,6 +49,23 @@
                     <i class="fas fa-user-plus"></i>
                 </div>
                 <a href="{{route('users.index')}}" class="small-box-footer">
+                    {{__('site.see_more')}}  <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{$admins }}</h3>
+
+                    <p>  {{__('site.admins')}}</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <a href="{{route('admins.index')}}" class="small-box-footer">
                     {{__('site.see_more')}}  <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>

@@ -49,7 +49,6 @@ class UserController extends Controller
                 ->addColumn('actions', function ($row) {
                         $actionBtn = '<a   href="users/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
                     return  $actionBtn;
-
                 })->addColumn('image', function ($artist) {
                     $url = $artist->image_path;
                     return '<img src="' . $url . '" border="0" width="100" class="img-rounded" align="center" />';

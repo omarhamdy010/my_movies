@@ -12,10 +12,10 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="{{'#'}}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{\Illuminate\Support\Facades\Auth::guard('admin') ?Auth::guard('admin')->user()->image_path : auth()->user()->image_path}}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{'#'}}</a>
+                <a href="#" class="d-block">{{\Illuminate\Support\Facades\Auth::guard('admin') ?Auth::guard('admin')->user()->name  : auth()->user()->name }}</a>
             </div>
         </div>
 

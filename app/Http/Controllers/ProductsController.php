@@ -16,7 +16,7 @@ class ProductsController extends Controller
 
     public function __construct()
     {
-        $this->middleware(function($request,$next){
+        $this->middleware(function ($request, $next) {
             if (session('success')) {
                 Alert::success(session('success'));
             }
@@ -28,6 +28,7 @@ class ProductsController extends Controller
             return $next($request);
         });
     }
+
     public function index()
     {
         return view('dashboard.products.index');
@@ -40,19 +41,19 @@ class ProductsController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('actions', function ($row) {
-                $actionBtn1= '';
-                $actionBtn= '';
+                $actionBtn1 = '';
+                $actionBtn = '';
 //                if (auth()->user()->hasPermission('product_update')) {
-                    $actionBtn1 = '<a href="products/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
+                $actionBtn1 = '<a href="products/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
 //                }
 //                if (auth()->user()->hasPermission('product_delete')) {
-                    $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm deleteProduct">Delete</a>';
+                $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm deleteProduct">Delete</a>';
 //                }
-                return $actionBtn1 . '  ' . $actionBtn;
+                return $actionBtn1 . '' . $actionBtn;
 
             })->addColumn('image', function ($artist) {
-                $url = $artist->images()->first()->path;
-                return '<img src="' . asset($url) . '" border="0" width="100" class="img-rounded" align="center" />';
+                $url = $artist->images()->first()->image_path;
+                return '<img src="' . $url . '" border="0" width="100" class="img-rounded" align="center" />';
             })->editColumn('category_id', function ($row) {
                 return $row->category->name;
             })
@@ -70,9 +71,11 @@ class ProductsController extends Controller
     public function store(Request $request, Product $Product)
     {
         $request->validate([
+
             'ar.*' => 'required|unique:category_translations,name',
             'en.*' => 'required|unique:category_translations,name',
             'category_id' => 'required'
+
         ]);
 
         $data = $request->except('images');
@@ -85,14 +88,16 @@ class ProductsController extends Controller
 
             foreach ($images as $image) {
 
-                $name = $image->getClientOriginalName();
+                $name = $image->hashName();
 
                 $path = $image->storeAs('products', $name, 'public_upload');
 
                 Images::create([
+
                     'name' => $name,
                     'path' => '/upload/' . $path,
                     'product_id' => $product->id
+
                 ]);
             }
         }
@@ -125,19 +130,19 @@ class ProductsController extends Controller
     {
 
         $request->validate([
+
             'ar.*' => 'required|unique:category_translations,name',
             'en.*' => 'required|unique:category_translations,name',
+
         ]);
 
-        $data = $request->except('images');
+        $data = $request->all();
 
         $Product->update($data);
 
-        foreach ($Product->images as $Products)
-        {
+        foreach ($Product->images as $Products) {
 
-            if ($Products->name != 'default.png')
-            {
+            if ($Products->name != 'default.png') {
 
                 Storage::disk('public_upload')->delete('/products/' . $Products->name);
 
@@ -145,26 +150,28 @@ class ProductsController extends Controller
 
             $Products->delete();
         }
-        if ($request->images)
-        {
-            $images = $request->images;
+        if (!$request->images) {
 
-            foreach ($images as $image)
-            {
+            Images::create([
+                'name' => 'default.png',
+                'product_id' => $Product->id,
+            ]);
 
-                $name = $image->getClientOriginalName();
-
-                $path = $image->storeAs('products', $name, 'public_upload');
-
-                Images::create([
-                    'name' => $name,
-                    'path' => '/upload/' . $path,
-                    'product_id' => $Product->id,
-                ]);
-            }
+            return redirect()->route('products.index');
         }
+        $images = $request->images;
 
+        foreach ($images as $image) {
 
+            $name = $image->getClientOriginalName();
+
+            $path = $image->storeAs('products', $name, 'public_upload');
+
+            Images::create([
+                'name' => $name,
+                'product_id' => $Product->id,
+            ]);
+        }
         return redirect()->route('products.index');
     }
 
@@ -172,10 +179,8 @@ class ProductsController extends Controller
     {
         $Products = Product::with('images')->find($id);
 
-        foreach ($Products->images as $image)
-        {
-            if ($image->name != 'default.png')
-            {
+        foreach ($Products->images as $image) {
+            if ($image->name != 'default.png') {
 
                 Storage::disk('public_upload')->delete('/products/' . $image->name);
 

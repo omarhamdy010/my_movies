@@ -28,11 +28,12 @@ class DashboardController extends Controller
 
     public function index()
     {
+
         $users =User::count();
         $category =Category::count();
         $product =Product::count();
-        $admin =Admin::count();
-        return view('dashboard.index' , compact('admin','users', 'category','product'));
+        $admins =Admin::count();
+        return view('dashboard.index' , compact('admins','users', 'category','product'));
     }
 
     public function handleAdmin()
