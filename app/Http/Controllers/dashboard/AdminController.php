@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admin;
 use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -40,18 +41,22 @@ class AdminController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Admin::latest()->get();
+            $data = Admin::whereHas(
+                'roles', function($q){
+                $q->where('name', 'admin');
+            }
+            )->latest()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('actions', function ($row) {
                     $actionBtn1= '';
                     $actionBtn= '';
-//                    if (auth()->guard('admin')->hasPermission('admins_update')) {
+                    if (Auth::guard('admin')->user()->hasPermission('admins_update')) {
                         $actionBtn1 = '<a href="admins/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
-//                    }
-//                    if (auth()->guard('admin')->hasPermission('admins_delete')) {
-                        $actionBtn = '<a   href="admins/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
-//                    }
+                    }
+                    if (Auth::guard('admin')->user()->hasPermission('admins_delete')) {
+                        $actionBtn = '<a href="admins/' . $row->id . '"  class="delete btn btn-danger btn-sm">Delete</a>';
+                    }
                     return $actionBtn1 . ' ' . $actionBtn;
 
                 })->addColumn('image', function ($artist) {
@@ -66,6 +71,7 @@ class AdminController extends Controller
     public function create(Admin $admins)
     {
         $permissions = Permission::all();
+
         return view('dashboard.admins.create', compact('admins', 'permissions'));
 
     }
@@ -76,7 +82,6 @@ class AdminController extends Controller
             'email' => 'required:unique',
             'name' => 'required',
             'password' => 'required|min:8',
-            'permissions' => 'required'
         ]);
 
         $data = $request->except(['password', 'permissions', 'image']);
@@ -120,7 +125,6 @@ class AdminController extends Controller
         $request->validate([
             'email' => 'required:unique',
             'name' => 'required',
-            'permissions' => 'required'
         ]);
         $data = $request->except(['permissions']);
 

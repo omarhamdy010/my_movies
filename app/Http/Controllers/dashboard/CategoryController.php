@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Subcategory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -16,7 +15,7 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(function ($request, $next) {
+        $this->middleware(function($request,$next){
             if (session('success')) {
                 Alert::success(session('success'));
             }
@@ -28,11 +27,12 @@ class CategoryController extends Controller
             return $next($request);
         });
     }
-
     public function index()
     {
         return view('dashboard.categories.index');
     }
+
+
 
     public function catajax(Request $request)
     {
@@ -43,8 +43,14 @@ class CategoryController extends Controller
                 ->addColumn('action', function ($row) {
                     $actionBtn1 = '';
                     $actionBtn = '';
-                    $actionBtn1 = '<a href="categories/' . $row->id . '/edit" class="edit btn btn-success btn-sm">Edit</a>';
-                    $actionBtn = '<a href="categories/' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
+                    if (Auth::guard('admin')->user()->hasPermission('category_update')) {
+
+                        $actionBtn1 = '<a href="categories/' . $row->id . '/edit" class="edit btn btn-success btn-sm">Edit</a>';
+                    }
+                    if (Auth::guard('admin')->user()->hasPermission('category_delete')) {
+
+                        $actionBtn = '<a href="categories/' . $row->id . '" class="delete btn btn-danger btn-sm">Delete</a>';
+                    }
                     return $actionBtn1 . '  ' . $actionBtn;
                 })->addColumn('image', function ($row) {
                     $url = $row->image_path;

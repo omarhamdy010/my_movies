@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Images;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -16,7 +17,7 @@ class ProductsController extends Controller
 
     public function __construct()
     {
-        $this->middleware(function ($request, $next) {
+        $this->middleware(function($request,$next){
             if (session('success')) {
                 Alert::success(session('success'));
             }
@@ -28,7 +29,6 @@ class ProductsController extends Controller
             return $next($request);
         });
     }
-
     public function index()
     {
         return view('dashboard.products.index');
@@ -43,12 +43,13 @@ class ProductsController extends Controller
             ->addColumn('actions', function ($row) {
                 $actionBtn1 = '';
                 $actionBtn = '';
-//                if (auth()->user()->hasPermission('product_update')) {
-                $actionBtn1 = '<a href="products/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
-//                }
-//                if (auth()->user()->hasPermission('product_delete')) {
-                $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm deleteProduct">Delete</a>';
-//                }
+                if (Auth::guard('admin')->user()->hasPermission('product_update')) {
+
+                    $actionBtn1 = '<a href="products/' . $row->id . '/edit"  class="edit btn btn-success btn-sm">Edit</a>';
+                }
+                if (Auth::guard('admin')->user()->hasPermission('product_delete')) {
+                    $actionBtn = '<a   href="products/' . $row->id . '"  class="delete btn btn-danger btn-sm deleteProduct">Delete</a>';
+                }
                 return $actionBtn1 . '' . $actionBtn;
 
             })->addColumn('image', function ($artist) {
@@ -74,7 +75,10 @@ class ProductsController extends Controller
 
             'ar.*' => 'required|unique:category_translations,name',
             'en.*' => 'required|unique:category_translations,name',
-            'category_id' => 'required'
+            'category_id' => 'required',
+            'price'=>'required',
+            'description'=>'required',
+            'amount'=>'required',
 
         ]);
 
@@ -82,28 +86,29 @@ class ProductsController extends Controller
 
         $product = $Product->create($data);
 
-        if ($request->images) {
+        if (!$request->images) {
 
-            $images = $request->images;
+            Images::create([
+                'name' => 'default.png',
+                'product_id' => $product->id,
+            ]);
 
-            foreach ($images as $image) {
-
-                $name = $image->hashName();
-
-                $path = $image->storeAs('products', $name, 'public_upload');
-
-                Images::create([
-
-                    'name' => $name,
-                    'path' => '/upload/' . $path,
-                    'product_id' => $product->id
-
-                ]);
-            }
+            return redirect()->route('products.index');
         }
+        $images = $request->images;
 
-        Session()->flash('success', 'added successfully');
+        foreach ($images as $image) {
 
+            $name = $image->getClientOriginalName();
+
+            $path = $image->storeAs('products', $name, 'public_upload');
+
+            Images::create([
+                'name' => $name,
+                'path'=>'public/'.$path,
+                'product_id' => $product->id,
+            ]);
+        }
         return redirect()->route('products.index');
 
     }
@@ -133,10 +138,13 @@ class ProductsController extends Controller
 
             'ar.*' => 'required|unique:category_translations,name',
             'en.*' => 'required|unique:category_translations,name',
+            'category_id' => 'required',
+            'price'=>'required',
+            'description'=>'required',
+            'amount'=>'required',
 
         ]);
-
-        $data = $request->all();
+        $data = $request->except('images');
 
         $Product->update($data);
 
