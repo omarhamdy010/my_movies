@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,20 +26,20 @@ Route::group(
 
     Route::prefix('dashboard')->middleware(['auth:admin','verified'])->group(function () {
 
-        Route::resource('users', \App\Http\Controllers\UserController::class)->except('show');
-        Route::resource('admins', \App\Http\Controllers\AdminController::class)->except('show');
-        Route::resource('products', \App\Http\Controllers\ProductsController::class)->except('show');
-        Route::resource('categories', \App\Http\Controllers\CategoryController::class)->except('show');
-        Route::resource('dashboard', \App\Http\Controllers\DashboardController::class)->except('show');
+        Route::resource('users', \App\Http\Controllers\dashboard\UserController::class)->except('show');
+        Route::resource('admins', \App\Http\Controllers\dashboard\AdminController::class)->except('show');
+        Route::resource('products', \App\Http\Controllers\dashboard\ProductsController::class)->except('show');
+        Route::resource('categories', \App\Http\Controllers\dashboard\CategoryController::class)->except('show');
+        Route::resource('dashboard', \App\Http\Controllers\dashboard\DashboardController::class)->except('show');
 
         Route::get('product.proajax', 'App\Http\Controllers\ProductsController@proajax')->name('product.proajax');
         Route::get('categories.catajax', 'App\Http\Controllers\CategoryController@catajax')->name('categories.catajax');
         Route::get('users-ajax', 'App\Http\Controllers\UserController@ajax')->name('users.ajax');
         Route::get('admins-ajax', 'App\Http\Controllers\AdminController@ajax')->name('admins.ajax');
         Route::get('categories/{id}', 'App\Http\Controllers\CategoryController@destroy');
-        Route::get('products/{id}', [\App\Http\Controllers\ProductsController::class, 'destroy']);
-        Route::get('users/{id}', [\App\Http\Controllers\UserController::class, 'destroy']);
-        Route::get('admins/{id}', [\App\Http\Controllers\UserController::class, 'destroy']);
+        Route::get('products/{id}', [\App\Http\Controllers\dashboard\ProductsController::class, 'destroy']);
+        Route::get('users/{id}', [\App\Http\Controllers\dashboard\UserController::class, 'destroy']);
+        Route::get('admins/{id}', [\App\Http\Controllers\dashboard\UserController::class, 'destroy']);
 
     });
     Route::prefix('front')->middleware(['auth','verified'])->group(function () {
